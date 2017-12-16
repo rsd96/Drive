@@ -7,6 +7,12 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.rsd96.drive.CurrentUser.user
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -32,6 +38,22 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, it.currentUser?.uid ?: "no user")
             user = it.currentUser
             if(user != null) {
+                var ref = FirebaseDatabase.getInstance().reference
+
+                ref.child("users").child(FirebaseAuth.getInstance()?.uid)
+                        .child("device_token").setValue(FirebaseInstanceId.getInstance().token)
+
+                ref.child("users").child(FirebaseAuth.getInstance()?.uid)
+                        .child("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snap: DataSnapshot?) {
+                        var cUser = snap?.value.toString()
+                        FirebaseMessaging.getInstance().subscribeToTopic("user_$cUser")
+                    }
+
+                    override fun onCancelled(p0: DatabaseError?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
 
                 Log.d(TAG, "user found")
             } else {
@@ -43,15 +65,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
     }
 
     private fun setupViewPager() {
         val adapter: TabsAdapter =  TabsAdapter(supportFragmentManager)
         adapter.addFragment(AlertFragment(), resources.getString(R.string.fragment_title_alert))
+        adapter.addFragment(AlertFeedFragment(), "AF")
         adapter.addFragment(UserFragment(), "User")
         viewPager.adapter = adapter
-        viewPager.currentItem = 0
+        viewPager.currentItem = 1
         tabs.setupWithViewPager(viewPager)
     }
 
@@ -61,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will

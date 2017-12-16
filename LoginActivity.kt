@@ -44,23 +44,25 @@ class LoginActivity: AppCompatActivity() {
             else if (TextUtils.isEmpty(password))
                 Toast.makeText(applicationContext, "Enter password!", Toast.LENGTH_SHORT).show()
             else {
-                progressBar.visibility = View.VISIBLE
+                pb_login.visibility = View.VISIBLE
 
-                auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this) { task ->
-                            progressBar.visibility = View.GONE
-                            if (!task.isSuccessful) {
-                                // error
-                                if (password.length <= 6) {
-                                    et_password.setError(getString(R.string.minimum_password))
+                if ( auth != null) {
+                    auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this) { task ->
+                                pb_login.visibility = View.GONE
+                                if (!task.isSuccessful) {
+                                    // error
+                                    if (password.length <= 6) {
+                                        et_password.setError(getString(R.string.minimum_password))
+                                    } else {
+                                        Toast.makeText(this, getString(R.string.auth_failed), Toast.LENGTH_SHORT).show()
+                                    }
                                 } else {
-                                    Toast.makeText(this, getString(R.string.auth_failed), Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                    finish()
                                 }
-                            } else {
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
                             }
-                        }
+                }
             }
         })
 

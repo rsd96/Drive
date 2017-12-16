@@ -85,7 +85,5 @@ class NotificationService: Service() {
             var notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(101, notificationBuilder.build())
         }
-
-
     }
 }

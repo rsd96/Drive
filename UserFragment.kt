@@ -25,15 +25,15 @@ class UserFragment : Fragment() {
         private val TAG = "UserFragment"
     }
 
-    lateinit var reLayoutManager: RecyclerView.LayoutManager
+    lateinit var reLayoutManager: LinearLayoutManager
     lateinit var reAdapter : RecyclerView.Adapter<CarsRecycleAdapter.ViewHolder>
-    var carList = ArrayList<String>()
     var nameList = ArrayList<String>()
+    var plateList = ArrayList<String>()
     lateinit var database: DatabaseReference
     var user: FirebaseUser? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
+        reLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         return inflater?.inflate(R.layout.fragment_user, container, false)
     }
 
@@ -43,10 +43,20 @@ class UserFragment : Fragment() {
         database = FirebaseDatabase.getInstance().reference
         user = FirebaseAuth.getInstance().currentUser
 
-        rv_user_cars.setHasFixedSize(true)
-        reLayoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        database.child("users").child(user?.uid).child("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snap: DataSnapshot?) {
+                tvUserName.text = snap?.value.toString()
+            }
+
+            override fun onCancelled(p0: DatabaseError?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        })
+
+        tvUserEmail.text = user?.email
         rv_user_cars.layoutManager = reLayoutManager
-        reAdapter = CarsRecycleAdapter(carList, nameList)
+        rv_user_cars.setHasFixedSize(true)
+        reAdapter = CarsRecycleAdapter(activity, plateList, nameList)
 
 
         FirebaseAuth.getInstance().addAuthStateListener { firebaseAuth ->
@@ -57,15 +67,17 @@ class UserFragment : Fragment() {
 
                 database.child("users").child(user?.uid).child("cars").addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot?) {
+                        plateList.clear()
                         nameList.clear()
-                        carList.clear()
                         if (snapshot != null) {
                             for (x in snapshot.children) {
-                                nameList.add(x.key.toString())
-                                carList.add(x.child("car_name").value.toString())
+                                plateList.add(x.key.toString())
+                                nameList.add(x.child("car_name").value.toString())
                             }
-                            rv_user_cars.adapter = reAdapter
-                            reAdapter.notifyDataSetChanged()
+                            if (rv_user_cars != null) {
+                                rv_user_cars.adapter = reAdapter
+                                reAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
 
@@ -75,7 +87,6 @@ class UserFragment : Fragment() {
                 })
             }
         }
-
 
         btn_user_add_cars.setOnClickListener({v ->
             var builder = AlertDialog.Builder(activity)
@@ -95,10 +106,12 @@ class UserFragment : Fragment() {
             builder.setNegativeButton("CANCEL", null)
             builder.create().show()
         })
+
         btn_user_logout.setOnClickListener({ view ->
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(activity, LoginActivity::class.java))
             activity.finish()
         })
+
     }
 }
