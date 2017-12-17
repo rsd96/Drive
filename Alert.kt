@@ -15,6 +15,7 @@ class Alert() : Parcelable{
     var time : String = ""
     var from : String = ""
     var uid : String = ""
+    var fromId : String = ""
 
     constructor(parcel: Parcel) : this() {
         message = parcel.readString()
@@ -22,6 +23,7 @@ class Alert() : Parcelable{
         time = parcel.readString()
         from = parcel.readString()
         uid = parcel.readString()
+        fromId = parcel.readString()
     }
 
 
@@ -37,6 +39,7 @@ class Alert() : Parcelable{
         parcel.writeString(time)
         parcel.writeString(from)
         parcel.writeString(uid)
+        parcel.writeString(fromId)
     }
 
     override fun describeContents(): Int {

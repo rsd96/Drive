@@ -54,7 +54,7 @@ class AlertFragment: Fragment() {
                 dbRef.child("users").child(FirebaseAuth.getInstance()?.uid).child("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snap: DataSnapshot?) {
                         from = snap?.value.toString()
-                        sendNotification(from, ownerId, carName, message)
+                        sendNotification(from, ownerId, carName, message, FirebaseAuth.getInstance()?.uid.toString())
                     }
 
                     override fun onCancelled(p0: DatabaseError?) {
@@ -65,13 +65,14 @@ class AlertFragment: Fragment() {
         }
     }
 
-    fun sendNotification(from: String, to: String, vehicle: String, message: String) {
+    fun sendNotification(from: String, to: String, vehicle: String, message: String, fromId: String) {
         var notification = hashMapOf<String, String>()
         notification.put("from", from)
         notification.put("to", to)
         notification.put("time", ServerValue.TIMESTAMP.toString())
         notification.put("vehicle", vehicle)
         notification.put("message", message)
+        notification.put("fromId", fromId)
 
         dbRef.child("alerts").push().setValue(notification).addOnCompleteListener { task ->
             if (task.isSuccessful) {

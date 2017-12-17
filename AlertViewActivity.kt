@@ -1,5 +1,6 @@
 package com.rsd96.drive
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -11,6 +12,9 @@ import com.github.florent37.viewanimator.ViewAnimator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_alert_view.*
 
 /**
@@ -20,8 +24,12 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
 
     var TAG = "AlertViewActivity"
     lateinit var database: DatabaseReference
-    var user: FirebaseUser? = null
+    var user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
     lateinit var alert: Alert
+
+    var storage: FirebaseStorage? = FirebaseStorage.getInstance()
+    var storageReference: StorageReference? = storage?.reference
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_alert_view)
@@ -36,15 +44,26 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
             alert.vehicle.let { tv_alert_view_vehicle.text = it }
         }
 
+        val ref = storageReference?.child("profiles/${alert.fromId}_profile.jpg")
+
         database = FirebaseDatabase.getInstance().reference
-        user = FirebaseAuth.getInstance().currentUser
 
         setSupportActionBar(toolbar_alert_view)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        Log.d(TAG, "${user?.uid}")
+        ref?.downloadUrl?.addOnSuccessListener { uri ->
+            if (iv_alert_view_profile != null) {
+                Picasso.with(applicationContext).load(uri.toString()).into(iv_alert_view_profile)
+                Log.d(TAG, "deleting pic...")
+
+            }
+        }
+
         btn_alert_view_delete.setOnClickListener(this)
         btn_alert_view_like.setOnClickListener(this)
         btn_alert_view_report.setOnClickListener(this)
+        btn_alert_view_chat.setOnClickListener(this)
     }
 
 
@@ -109,6 +128,13 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
                 builder.setNegativeButton("Cancel", {dialogInterface, i ->  })
                 var dialog = builder.create()
                 dialog.show()
+            }
+
+            R.id.btn_alert_view_chat -> {
+                var intent = Intent(applicationContext, ChatActivity::class.java)
+                intent.putExtra("fromId", alert.fromId)
+                intent.putExtra("from", alert.from)
+                startActivity(intent)
             }
         }
     }

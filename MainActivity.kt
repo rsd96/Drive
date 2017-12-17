@@ -2,6 +2,7 @@ package com.rsd96.drive
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -61,6 +62,25 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+
+        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position) {
+                    1 -> tab?.setIcon(R.drawable.ic_alert_feed)
+                }
+
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                when(tab?.position) {
+                    1 -> tab?.setIcon(R.drawable.ic_tab_alert_feed_unselected)
+                }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
     }
 
     override fun onStart() {
@@ -75,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = adapter
         viewPager.currentItem = 1
         tabs.setupWithViewPager(viewPager)
+        tabs.getTabAt(1)?.text = ""
+        tabs.getTabAt(1)?.setIcon(R.drawable.ic_alert_feed)
     }
 
 

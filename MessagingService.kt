@@ -16,9 +16,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 
-
-
-
 /**
  * Created by Ramshad on 11/29/17.
  */

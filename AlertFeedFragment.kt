@@ -48,6 +48,7 @@ class AlertFeedFragment : Fragment() {
                             alert.message = x.child("message").value.toString()
                             alert.from = x.child("from").value.toString()
                             alert.uid = uid
+                            alert.fromId = x.child("fromId").value.toString()
 //                            var timestamp = x.child("time").value as Long
 //                            var sfd : SimpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
 //                            var time = sfd.format( Date(timestamp))
@@ -60,13 +61,14 @@ class AlertFeedFragment : Fragment() {
                     for ( x in alertList) {
                         Log.d(TAG, "Message ${x.message}")
                     }
-                    pb_alert_feed.visibility = View.GONE
+                    if (pb_alert_feed != null)
+                        pb_alert_feed.visibility = View.GONE
                     var adapter = AlertFeedAdapter(activity, alertList)
                     lv_alert_feed.adapter = adapter
                 }
             }
             override fun onCancelled(snap: DatabaseError?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
             }
         })
 
@@ -81,5 +83,6 @@ class AlertFeedFragment : Fragment() {
             startActivity(intent)
 
         })
+
     }
 }
