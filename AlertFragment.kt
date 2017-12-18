@@ -13,6 +13,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_alert.*
 
 /**
@@ -26,9 +29,14 @@ class AlertFragment: Fragment() {
 
     }
 
+    var storage: FirebaseStorage? = FirebaseStorage.getInstance()
+    var storageReference: StorageReference? = storage?.reference
+
+
     var owner = " "
     var carName = " "
     var ownerId = " "
+    var from = ""
     var dbRef = FirebaseDatabase.getInstance().reference
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -62,6 +70,12 @@ class AlertFragment: Fragment() {
                     }
                 })
             }
+
+            et_alert_message.text.clear()
+            et_alert_search.text.clear()
+            textInputLayout3.visibility = View.GONE
+            cv_alert_found.visibility = View.GONE
+            btn_alert.visibility = View.GONE
         }
     }
 
@@ -83,6 +97,7 @@ class AlertFragment: Fragment() {
     }
 
     fun searchPlate(plate: String) {
+        textInputLayout3.visibility = View.VISIBLE
         tv_alert_found.text = ""
         pb_alert.visibility = View.VISIBLE
         var found = false
@@ -91,6 +106,7 @@ class AlertFragment: Fragment() {
 
                 for (userBlock in snapshot?.children!!) {
                     ownerId = userBlock.key
+                    from = ownerId
                     owner = userBlock.child("user_name").value.toString()
                     for (carBlock in userBlock.child("cars").children) {
                         if (carBlock.key.toLowerCase() == plate) {
@@ -104,13 +120,26 @@ class AlertFragment: Fragment() {
 
                 pb_alert.visibility = View.GONE
                 if (found) {
-                    tv_alert_found.text = "Car: $carName \nOwned by : $owner"
+                    val ref = storageReference?.child("profiles/${from}_profile.jpg")
+                    ref?.downloadUrl?.addOnSuccessListener { uri ->
+
+                        Picasso.with(context).
+                                cancelRequest(iv_alert_found_profile)
+                        Picasso.with(context).
+                                load(uri.toString()).
+                                error(R.drawable.profile_default).
+                                into(iv_alert_found_profile)
+                    }
+                    cv_alert_found.visibility = View.VISIBLE
+                    tv_alert_found.text = "$carName "
+                    tv_alert_list_owner.text = "$owner"
                     et_alert_message.visibility = View.VISIBLE
                     btn_alert.visibility = View.VISIBLE
                     var imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(view?.windowToken, 0)
 
                 } else {
+                    cv_alert_found.visibility = View.VISIBLE
                     tv_alert_found.text = "Vehicle not found!"
                     et_alert_message.visibility = View.GONE
                 }

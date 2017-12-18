@@ -17,11 +17,15 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.rsd96.drive.CurrentUser.user
 import kotlinx.android.synthetic.main.activity_main.*
 
+
+
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
     lateinit private var mAuth: FirebaseAuth
     lateinit private var authListener: FirebaseAuth.AuthStateListener
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,18 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         //supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+//        val actionBar = supportActionBar
+//        actionBar!!.displayOptions = actionBar.displayOptions //or supportActionBar.DISPLAY_SHOW_CUSTOM
+//        val imageView = ImageView(actionBar.themedContext)
+//        imageView.scaleType = ImageView.ScaleType.CENTER
+//        imageView.setImageResource(R.drawable.profile_default)
+//        val layoutParams = ActionBar.LayoutParams(
+//                ActionBar.LayoutParams.WRAP_CONTENT,
+//                ActionBar.LayoutParams.WRAP_CONTENT, Gravity.RIGHT or Gravity.CENTER_VERTICAL)
+//        layoutParams.rightMargin = 40
+//        imageView.layoutParams = layoutParams
+//        actionBar.customView = imageView
 
         setupViewPager()
 
@@ -67,16 +83,18 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position) {
+                    0 -> tab?.setIcon(R.drawable.ic_tab_alert_selected)
                     1 -> tab?.setIcon(R.drawable.ic_alert_feed)
-                    3 -> tab?.setIcon(R.drawable.ic_tab_chat_selected)
+                    2 -> tab?.setIcon(R.drawable.ic_tab_chat_selected)
                 }
 
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 when(tab?.position) {
+                    0 -> tab?.setIcon(R.drawable.ic_tab_alert_unselected)
                     1 -> tab?.setIcon(R.drawable.ic_tab_alert_feed_unselected)
-                    3 -> tab?.setIcon(R.drawable.ic_tab_chat_unselected)
+                    2 -> tab?.setIcon(R.drawable.ic_tab_chat_unselected)
                 }
             }
 
@@ -91,15 +109,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViewPager() {
         val adapter: TabsAdapter =  TabsAdapter(supportFragmentManager)
-        adapter.addFragment(AlertFragment(), resources.getString(R.string.fragment_title_alert))
+        adapter.addFragment(AlertFragment(), "")
         adapter.addFragment(AlertFeedFragment(), "")
-        adapter.addFragment(UserFragment(), "User")
         adapter.addFragment(ChatFeedFragment(), "")
         viewPager.adapter = adapter
         viewPager.currentItem = 1
         tabs.setupWithViewPager(viewPager)
+        tabs.getTabAt(0)?.setIcon(R.drawable.ic_tab_alert_unselected)
         tabs.getTabAt(1)?.setIcon(R.drawable.ic_alert_feed)
-        tabs.getTabAt(3)?.setIcon(R.drawable.ic_tab_chat_unselected)
+        tabs.getTabAt(2)?.setIcon(R.drawable.ic_tab_chat_unselected)
     }
 
 
@@ -116,7 +134,9 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_user) {
+
+            startActivity(Intent(this, UserActivity::class.java))
             return true
         }
 

@@ -68,7 +68,19 @@ class ChatFeedFragment: Fragment() {
 
             var intent = Intent(activity, ChatActivity::class.java)
             intent.putExtra("chat_parcel", obj)
-            startActivity(intent)
+            FirebaseDatabase.getInstance().reference.child("users").child("${obj.user2}").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snap: DataSnapshot?) {
+                    var from = snap?.child("user_name")?.value.toString()
+                    intent.putExtra("from", from)
+                    startActivity(intent)
+                }
+
+                override fun onCancelled(p0: DatabaseError?) {
+
+
+                }
+            })
+
 
         })
     }

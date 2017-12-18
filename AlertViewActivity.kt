@@ -132,11 +132,17 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
 
             R.id.btn_alert_view_chat -> {
                 var intent = Intent(applicationContext, ChatActivity::class.java)
-                intent.putExtra("fromId", alert.fromId)
-                intent.putExtra("from", alert.from)
-                startActivity(intent)
+//                intent.putExtra("fromId", alert.fromId)
+//                intent.putExtra("from", alert.from)
+//                startActivity(intent)
 
                 var chatSession = ChatSession()
+                chatSession.user1 = user?.uid!!
+                chatSession.user2 = alert.fromId
+                chatSession.lastMessage = Message()
+                intent.putExtra("chat_parcel", chatSession)
+                intent.putExtra("from", alert.from)
+                startActivity(intent)
 
                 database.child("chats").addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snap: DataSnapshot?) {
@@ -149,11 +155,7 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
                                 }
                             }
                             if (!found) {
-                                chatSession.user1 = user?.uid!!
-                                chatSession.user2 = alert.fromId
-                                chatSession.lastMessage = Message()
                                 database.child("chats").child("${user?.uid}${alert.fromId}").setValue(chatSession)
-
                             }
                         }
                     }

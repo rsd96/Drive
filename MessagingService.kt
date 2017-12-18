@@ -78,6 +78,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setColor(ContextCompat.getColor(applicationContext, R.color.colorBackground))
                 .setAutoCancel(true)
                 .setContentIntent(contentIntent)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH)
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

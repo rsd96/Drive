@@ -50,19 +50,26 @@ class AlertFeedAdapter(internal var context: Context, internal var alertList : M
         }
 
         ref?.downloadUrl?.addOnSuccessListener { uri ->
-            Picasso
-                    .with(context)
-                    .load(uri.toString())
-//                    .networkPolicy(NetworkPolicy.OFFLINE)
-//                    .into(viewHolder.ivProfile, object : Callback {
-//                        override fun onSuccess() {
-//                        }
-//
-//                        override fun onError() {
-//                            Log.v("Picasso","Could not fetch image")
-//                        }
-//                    })
-                    .into(viewHolder.ivProfile)
+
+            Picasso.with(context).
+                    cancelRequest(viewHolder.ivProfile)
+            Picasso.with(context).
+                    load(uri.toString()).
+                    error(R.drawable.profile_default).
+                    into(viewHolder.ivProfile)
+//            Picasso
+//                    .with(context)
+//                    .load(uri.toString())
+////                    .networkPolicy(NetworkPolicy.OFFLINE)
+////                    .into(viewHolder.ivProfile, object : Callback {
+////                        override fun onSuccess() {
+////                        }
+////
+////                        override fun onError() {
+////                            Log.v("Picasso","Could not fetch image")
+////                        }
+////                    })
+//                    .into(viewHolder.ivProfile)
         }
         viewHolder.tvVehicle?.text = vehicle
         viewHolder.tvMessage?.text = message

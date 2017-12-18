@@ -53,6 +53,8 @@ class ChatFeedAdapter(internal var context: Context, internal var chatList : Mut
 
         database.child("chats").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snap: DataSnapshot?) {
+
+                var finalMessage = Message()
                 if (snap != null) {
                     Log.d(TAG, " CHILD : ${snap.child("${user1}${user2}").child("user1").value}")
                     if ( snap.child("${user1}${user2}").child("user1").value == FirebaseAuth.getInstance().currentUser?.uid) {
@@ -62,6 +64,9 @@ class ChatFeedAdapter(internal var context: Context, internal var chatList : Mut
                         myId = snap.child("${user1}${user2}").child("user2").value.toString()
                         from = snap.child("${user1}${user2}").child("user1").value.toString()
                     }
+
+                    finalMessage = snap.child("${user1}${user2}").child("lastMessage").getValue(Message::class.java) as Message
+                    viewHolder.tvMessage?.text = finalMessage.message
                 }
                 Log.d(TAG, "myId = ${myId} | from = ${from}")
 
@@ -135,6 +140,5 @@ class ChatFeedAdapter(internal var context: Context, internal var chatList : Mut
         var ivProfile: ImageView? = null
         var tvMessage: TextView? = null
         var tvFrom: TextView? = null
-        var tvTime: TextView? = null
     }
 }

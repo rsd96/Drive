@@ -63,8 +63,10 @@ class AlertFeedFragment : Fragment() {
                     }
                     if (pb_alert_feed != null)
                         pb_alert_feed.visibility = View.GONE
-                    var adapter = AlertFeedAdapter(activity, alertList)
-                    lv_alert_feed.adapter = adapter
+                    if (activity != null) {
+                        var adapter = AlertFeedAdapter(activity, alertList)
+                        lv_alert_feed.adapter = adapter
+                    }
                 }
             }
             override fun onCancelled(snap: DatabaseError?) {
