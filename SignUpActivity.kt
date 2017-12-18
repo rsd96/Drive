@@ -58,6 +58,8 @@ class SignUpActivity: AppCompatActivity() {
                             if (task.isSuccessful) {
                                 var ref = FirebaseDatabase.getInstance().getReference()
                                 ref.child("users").child(auth.currentUser?.uid).child("user_name").setValue(userName)
+                                var rep = 0
+                                ref.child("users").child(auth.currentUser?.uid).child("rep").setValue(rep)
                                 startActivity(Intent(this, MainActivity::class.java))
                                 finish()
                             } else {

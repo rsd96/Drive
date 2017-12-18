@@ -60,9 +60,10 @@ class UserActivity : AppCompatActivity() {
                 Picasso.with(applicationContext).load(uri.toString()).into(iv_user_profile)
         }
 
-        database.child("users").child(user?.uid).child("user_name").addListenerForSingleValueEvent(object : ValueEventListener {
+        database.child("users").child(user?.uid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snap: DataSnapshot?) {
-                tvUserName.text = snap?.value.toString()
+                tv_user_rep.text = snap?.child("rep")?.value.toString()
+                tvUserName.text = snap?.child("user_name")?.value.toString()
             }
 
             override fun onCancelled(p0: DatabaseError?) {
