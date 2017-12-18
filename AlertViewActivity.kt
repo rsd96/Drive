@@ -135,6 +135,34 @@ class AlertViewActivity : AppCompatActivity(), View.OnClickListener{
                 intent.putExtra("fromId", alert.fromId)
                 intent.putExtra("from", alert.from)
                 startActivity(intent)
+
+                var chatSession = ChatSession()
+
+                database.child("chats").addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snap: DataSnapshot?) {
+                        if (snap != null) {
+                            var found = false
+                            for (x in snap.children) {
+                                if (x.key == "${user?.uid}${alert.fromId}") {
+                                    found = true
+                                    break
+                                }
+                            }
+                            if (!found) {
+                                chatSession.user1 = user?.uid!!
+                                chatSession.user2 = alert.fromId
+                                chatSession.lastMessage = Message()
+                                database.child("chats").child("${user?.uid}${alert.fromId}").setValue(chatSession)
+
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(p0: DatabaseError?) {
+                    }
+                })
+
+
             }
         }
     }

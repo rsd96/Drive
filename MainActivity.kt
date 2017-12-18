@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position) {
                     1 -> tab?.setIcon(R.drawable.ic_alert_feed)
+                    3 -> tab?.setIcon(R.drawable.ic_tab_chat_selected)
                 }
 
             }
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 when(tab?.position) {
                     1 -> tab?.setIcon(R.drawable.ic_tab_alert_feed_unselected)
+                    3 -> tab?.setIcon(R.drawable.ic_tab_chat_unselected)
                 }
             }
 
@@ -90,13 +92,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupViewPager() {
         val adapter: TabsAdapter =  TabsAdapter(supportFragmentManager)
         adapter.addFragment(AlertFragment(), resources.getString(R.string.fragment_title_alert))
-        adapter.addFragment(AlertFeedFragment(), "AF")
+        adapter.addFragment(AlertFeedFragment(), "")
         adapter.addFragment(UserFragment(), "User")
+        adapter.addFragment(ChatFeedFragment(), "")
         viewPager.adapter = adapter
         viewPager.currentItem = 1
         tabs.setupWithViewPager(viewPager)
-        tabs.getTabAt(1)?.text = ""
         tabs.getTabAt(1)?.setIcon(R.drawable.ic_alert_feed)
+        tabs.getTabAt(3)?.setIcon(R.drawable.ic_tab_chat_unselected)
     }
 
 
